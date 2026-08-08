@@ -1,10 +1,44 @@
 # Changelog
 
-All notable changes to TradingAgents are documented here.
+All notable changes to TradingAgents-CN-lite are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-Breaking changes within the 0.x line are called out explicitly.
+
+## [CN-lite-0.1.1] — 2026-05-31
+
+### Fixed
+
+- **Debate output in debug mode.** The bull/bear and risk debate content was invisible in console output because `stream_mode="values"` made every chunk contain the full state, so the old `elif` chain always hit stale data. Now tracks previous debate state values and only prints when content actually changes.
+- **Structured output validation for mimo-v2.5-pro.** Added `model_validator` to `TraderProposal` and `PortfolioDecision` to coerce `"None"` / `"null"` strings to real `None` for `Optional[float]` fields, preventing Pydantic validation errors.
+- **Chinese rating label parsing.** `parse_rating` now supports Chinese "评级" labels with full-width colon `：`, and prioritizes label lines over scattered rating words in second-pass scan.
+- **HTML report language mismatch.** English HTML report now always outputs English (translating Chinese source if needed), Chinese HTML report always outputs Chinese, regardless of source markdown language.
+
+## [CN-lite-0.1.0] — 2026-05-27
+
+First release of TradingAgents-CN-lite. Based on [TauricResearch/TradingAgents v0.2.5](https://github.com/TauricResearch/TradingAgents) with A-share market data support added.
+
+### Added
+
+- **BaoStock data source** for A-share OHLCV, technical indicators, and index data. Replaces akshare for stock price data (eastmoney push2his endpoint is blocked).
+- **AkShare** for A-share fundamentals, financial statements, news, and CCTV macro news.
+- **Market auto-detection** (`market_detect.py`) — regex-based A-share ticker classification covering Shanghai (60xxxx/68xxxx), Shenzhen (00xxxx/30xxxx), and Beijing (8xxxxx).
+- **EastMoney Guba** scraper for A-share retail sentiment, with keyword-based Chinese sentiment analysis.
+- **Anti-scraping infrastructure** — monkey-patches `requests.get` with curl_cffi Chrome TLS fingerprint for eastmoney.com bypass.
+- **A-share returns and benchmarking** via BaoStock, with CSI 300 (Shanghai/Shenzhen) and BSE 50 (Beijing) as default benchmarks.
+- **LLM-powered HTML report generation** (English + Chinese).
+
+### Changed
+
+- A-share data routing: OHLCV/indicators → BaoStock, fundamentals/news → AkShare, sentiment → EastMoney Guba.
+- Financial statement output limited to last 20 periods.
+- Default ticker set to `002594` (BYD).
+
+---
+
+## Upstream Changelog
+
+The following entries are from the original [TauricResearch/TradingAgents](https://github.com/TauricResearch/TradingAgents) project.
 
 ## [0.2.5] — 2026-05-11
 
